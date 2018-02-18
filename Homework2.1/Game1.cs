@@ -2,8 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Homework2._1
+namespace Homework21
 {
+    public enum GameState
+    {
+        Menu,
+        Game,
+        GameOver
+    }
+
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
@@ -12,10 +19,56 @@ namespace Homework2._1
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        // Player texture properties
+        private Texture2D marioTexture;
+        private Rectangle marioSprite;
+        int marioSpritesInSheet;
+        int marioWidth;
+        int marioHeight;
+
+        // Mario Statemachine
+        private enum MarioState
+        {
+            WalkLeft,
+            FaceLeft,
+            Stand,
+            FaceRight,
+            WalkRight
+        }
+
+        // Collectible texture properties
+        private Texture2D collectibleTexture;
+        private Rectangle collectibleSprite;
+        int collectibleSpritesInSheet;
+        int collectibleWidth;
+        int collectibleHeight;
+
+        // Text drawing properties
+        private Vector2 levelScore = new Vector2(0, 0);
+        private Vector2 totalScore = new Vector2(0, 35);
+
+        private SpriteFont spriteFont;
+
+        // Animation reqs
+        int currentFrame;
+        double fps;
+        double secondsPerFrame;
+        double timeCounter;
+
+        // State holder
+        GameState gameState = GameState.Menu;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            Window.Position = new Point(                    // Center the game view on the screen
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
+                    (graphics.PreferredBackBufferWidth / 2),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
+                    (graphics.PreferredBackBufferHeight / 2)
+            );
         }
 
         /// <summary>
@@ -41,6 +94,19 @@ namespace Homework2._1
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");
+            marioSpritesInSheet = 5;
+            marioWidth = marioTexture.Width / marioSpritesInSheet;
+
+            collectibleTexture = Content.Load<Texture2D>("CoinSprite");
+            collectibleSpritesInSheet = 1;
+            collectibleWidth = collectibleTexture.Width / collectibleSpritesInSheet;
+
+            // Set up animation stuff
+            currentFrame = 1;
+            fps = 10.0;
+            secondsPerFrame = 1.0f / fps;
+            timeCounter = 0;
         }
 
         /// <summary>
@@ -63,6 +129,19 @@ namespace Homework2._1
                 Exit();
 
             // TODO: Add your update logic here
+            ProcessInput();
+
+            switch (gameState)
+            {
+                case GameState.Menu:
+                    break;
+                case GameState.Game:
+                    break;
+                case GameState.GameOver:
+                    break;                
+                default:
+                    break;
+            }
 
             base.Update(gameTime);
         }
@@ -76,8 +155,44 @@ namespace Homework2._1
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            switch (gameState)
+            {
+                case GameState.Menu:
+                    break;
+                case GameState.Game:
+                    break;
+                case GameState.GameOver:
+                    break;
+                default:
+                    break;
+            }
 
             base.Draw(gameTime);
+        }
+
+        private void ProcessInput()
+        {
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            if (!keyboardState.IsKeyDown(Keys.Enter))
+            {
+
+            }
+            else
+            {
+                if (gameState == GameState.Game)
+                {
+                    gameState = GameState.GameOver;
+                }
+                else if (gameState == GameState.GameOver)
+                {
+                    gameState = GameState.Menu;
+                }
+                else if (gameState == GameState.Menu)
+                {
+                    gameState = GameState.Game;
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Homework2._1
+namespace Homework21
 {
 #if WINDOWS || LINUX
     /// <summary>

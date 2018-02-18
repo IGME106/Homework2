@@ -1,4 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -19,6 +25,9 @@ namespace Homework21
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Player player;
+        List<Collectible> collectibles;
+
         // Player texture properties
         private Texture2D marioTexture;
         private Rectangle marioSprite;
@@ -26,7 +35,7 @@ namespace Homework21
         int marioWidth;
         int marioHeight;
 
-        // Mario Statemachine
+        // Player Statemachine
         private enum MarioState
         {
             WalkLeft,
@@ -35,7 +44,7 @@ namespace Homework21
             FaceRight,
             WalkRight
         }
-
+        
         // Collectible texture properties
         private Texture2D collectibleTexture;
         private Rectangle collectibleSprite;
@@ -55,8 +64,15 @@ namespace Homework21
         double secondsPerFrame;
         double timeCounter;
 
-        // State holder
+        // Game stats
         GameState gameState = GameState.Menu;
+
+        int currentLevel = 0;
+        double timer;
+
+        KeyboardState kbState;
+        KeyboardState previousKbState;
+
 
         public Game1()
         {
@@ -80,6 +96,7 @@ namespace Homework21
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
 
             base.Initialize();
         }
@@ -193,6 +210,26 @@ namespace Homework21
                     gameState = GameState.Game;
                 }
             }
+        }
+
+        private void NextLevel()
+        {
+            currentLevel++;
+
+            timer = 10;
+            player.LevelScore = 0;
+            player.XPosition = (GraphicsDevice.Viewport.Width / 2);
+            player.YPosition = (GraphicsDevice.Viewport.Height / 2);
+
+            collectibles.Clear();
+
+            int nrCollectibles = ((this.currentLevel * 3) - 2);
+
+            for (int i = 0; i < nrCollectibles; i++)
+            {
+                collectibles.Add(new Collectible());
+            }
+            
         }
     }
 }

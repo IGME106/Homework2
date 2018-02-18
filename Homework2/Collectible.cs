@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Homework21
+namespace Homework2
 {
     class Collectible : GameObject
     {
         private bool active;
 
-        public Collectible()
+        public Collectible(int x, int y, int width, int height) : base(x, y, width, height)
         {
             Active = true;
         }
@@ -39,7 +39,7 @@ namespace Homework21
             return returnValue;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public new void Draw(SpriteBatch spriteBatch)
         {
             if (this.Active)
             {

@@ -9,8 +9,8 @@
     <ProjectGuid>{EE957F25-B1C5-462D-A703-3E84B1A519E1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Homework21</RootNamespace>
-    <AssemblyName>Homework21</AssemblyName>
+    <RootNamespace>Homework2</RootNamespace>
+    <AssemblyName>Homework2</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

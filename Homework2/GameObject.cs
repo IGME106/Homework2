@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Homework21
+namespace Homework2
 {
     class GameObject : Game1
     {
@@ -17,9 +17,12 @@ namespace Homework21
         private int xPosition;
         private int yPosition;
 
+        public int rectangleWidth;
+        private int rectangleHeight;
+
         public GameObject(int x, int y, int width, int height)
         {
-            Rectangle = new Rectangle(x, y, width, height);
+            rectangle = new Rectangle(x, y, width, height);
         }
 
         public Texture2D Texture2D
@@ -37,20 +40,35 @@ namespace Homework21
         public int XPosition
         {
             get { return this.xPosition; }
-            set { this.xPosition = value; }
+            set
+            {
+                this.xPosition = value;
+
+                CreateRectangle();
+            }
         }
 
         public int YPosition
         {
             get { return this.yPosition; }
-            set { this.yPosition = value; }
+            set
+            {
+                this.yPosition = value;
+
+                CreateRectangle();
+            }
+        }
+
+        private void CreateRectangle()
+        {
+            rectangle = new Rectangle(this.XPosition, this.YPosition, this.Rectangle.Width, this.Rectangle.Height);
         }
 
         public void Draw(SpriteBatch spriteBatch)
-        {
+        {   
             spriteBatch.Draw(
-                Texture2D,
-                Rectangle,
+                texture2d,
+                rectangle,
                 Color.White);
         }
     }    

@@ -30,17 +30,11 @@ namespace Homework2
 
         // Player texture properties
         private Texture2D marioTexture;
-        //private Rectangle marioSprite;
-        int marioSpritesInSheetWidth = 5;
-        int marioSpritesInSheetHeight = 1;
         int marioWidth = 44;
         int marioHeight = 72;
         
         // Collectible texture properties
         private Texture2D collectibleTexture;
-        //private Rectangle collectibleSprite;
-        int collectibleSpritesInSheetWidth = 1;
-        int collectibleSpritesInSheetHeight = 1;
         int collectibleWidth = 20;
         int collectibleHeight = 20;
 
@@ -102,7 +96,7 @@ namespace Homework2
 
             currentLevel = 0;
             nrCollectibles = 1;
-            levelTimer = 100;
+            //levelTimer = 100;
 
             player = new Player(0, 0, marioWidth, marioHeight);
 
@@ -122,7 +116,13 @@ namespace Homework2
             
             marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");
             
-            player = new Player(0, 0, marioWidth, marioHeight);
+            player = new Player(
+                GraphicsDevice.Viewport.Width / 2,
+                GraphicsDevice.Viewport.Width / 2,
+                marioWidth,
+                marioHeight
+            );
+
             player.Texture2D = marioTexture;
 
             collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");
@@ -179,12 +179,13 @@ namespace Homework2
                     if (SingleKeyPress(Keys.Enter))
                     {
                         gameState = GameState.Game;
+                        levelTimer = 100;
                     }
 
                     break;
                 case GameState.Game:
 
-                    if (levelTimer != 0)
+                    if (levelTimer > 0)
                     {
                         previousKbState = kbState;
 
@@ -207,6 +208,11 @@ namespace Homework2
                         }
 
                         levelTimer -= 0.1;
+
+                        if (levelTimer <= 0)
+                        {
+                            gameState = GameState.GameOver;
+                        }
                     }
                     else
                     {
@@ -277,21 +283,21 @@ namespace Homework2
                 case GameState.Game:
                     spriteBatch.DrawString(
                         totalScoreFont,
-                        player.TotalScore.ToString(),
+                        "Total Score: " + player.TotalScore.ToString(),
                         totalScorePosition,
                         Color.Blue
                     );
 
                     spriteBatch.DrawString(
                         levelScoreFont,
-                        player.LevelScore.ToString(),
+                        "Score this level: " + player.LevelScore.ToString(),
                         levelScorePosition,
                         Color.Blue
                     );
 
                     spriteBatch.DrawString(
                         levelTimerFont,
-                        levelTimer.ToString(),
+                        "Time left: " + String.Format("{0:0.00}", levelTimer),
                         levelTimerPosition,
                         Color.Blue
                     );
@@ -341,8 +347,8 @@ namespace Homework2
 
             for (int i = 0; i < nrCollectibles; i++)
             {
-                collectibles.Add(new Collectible(random.Next(50, GraphicsDevice.Viewport.Width),
-                                                random.Next(50, GraphicsDevice.Viewport.Height),
+                collectibles.Add(new Collectible(random.Next(50, (GraphicsDevice.Viewport.Width - collectibleWidth)),
+                                                random.Next(50, GraphicsDevice.Viewport.Height - collectibleHeight),
                                                 collectibleWidth,
                                                 collectibleHeight));
 

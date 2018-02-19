@@ -97,7 +97,6 @@ namespace Homework2
 
             currentLevel = 0;
             nrCollectibles = 1;
-            //levelTimer = 100;
 
             player = new Player(0, 0, marioWidth, marioHeight);
 
@@ -284,14 +283,30 @@ namespace Homework2
             switch (gameState)
             {
                 case GameState.Menu:
-                    spriteBatch.DrawString(
-                        menuFont,
-                        "Coin Collector\n" +
+
+                    string drawString = "Coin Collector\n" +
                         "\n" +
                         "Use the following keys to navigate" +
-                        "W\nA S D",
-                        new Vector2((GraphicsDevice.Viewport.Width / 3), 
-                                    GraphicsDevice.Viewport.Height / 3),
+                        "\n\n" +
+                        "  W\nA S D" +
+                        "\n\n" +
+                        "Press Enter to start/stop the game";
+
+                    //spriteBatch.DrawString(
+                    //    menuFont,
+                    //    drawString,
+                    //    new Vector2((GraphicsDevice.Viewport.Width / 2), 
+                    //                GraphicsDevice.Viewport.Height / 3),
+                    //    Color.Red
+                    //);
+                    
+                    spriteBatch.DrawString(
+                        menuFont,
+                        drawString,
+                        new Vector2(
+                                (GraphicsDevice.Viewport.Width / 2) - (menuFont.MeasureString(drawString).X / 2),
+                                (GraphicsDevice.Viewport.Height / 2) - (menuFont.MeasureString(drawString).Y / 2)
+                            ),
                         Color.Red
                     );
 
@@ -346,6 +361,123 @@ namespace Homework2
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void StringDrawer(string drawString, SpriteFont drawFont, string position, string color)
+        {
+            string drawString = "Coin Collector\n" +
+                        "\n" +
+                        "Use the following keys to navigate" +
+                        "\n\n" +
+                        "  W\nA S D" +
+                        "\n\n" +
+                        "Press Enter to start/stop the game";
+            
+            spriteBatch.DrawString(
+                menuFont,
+                drawString,
+                new Vector2(
+                        (GraphicsDevice.Viewport.Width / 2) - (menuFont.MeasureString(drawString).X / 2),
+                        (GraphicsDevice.Viewport.Height / 2) - (menuFont.MeasureString(drawString).Y / 2)
+                    ),
+                Color.Red
+            );
+        }
+
+        private Vector2 GetPosition(string displayString, string position, SpriteFont font)
+        {
+            Vector2 returnValue = new Vector2(0, 0);
+
+            int viewportWidth = GraphicsDevice.Viewport.Width;
+            int viewportHeight = GraphicsDevice.Viewport.Height;
+
+            int textWidth = (int)font.MeasureString(displayString).X;
+            int textHeight = (int)font.MeasureString(displayString).Y;
+            
+            switch (position)
+            {
+                case "Left":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;                
+                case "Right":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "Top":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "Bottom":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "Center":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "TopLeft":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "TopCenter":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "TopRight":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "BottomLeft":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "BottomCenter":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                case "BottomRight":
+                    returnValue = new Vector2(
+                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportHeight / 2) - (textHeight / 2)
+                    );
+
+                    break;
+                default:
+                    break;
+            }
+
+            return returnValue;
         }
 
         private void NextLevel()

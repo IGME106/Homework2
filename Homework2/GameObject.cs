@@ -17,8 +17,8 @@ namespace Homework2
         private int xPosition;
         private int yPosition;
 
-        public int rectangleWidth;
-        private int rectangleHeight;
+        //public int rectangleWidth;
+        //private int rectangleHeight;
 
         public GameObject(int x, int y, int width, int height)
         {

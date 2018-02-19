@@ -78,6 +78,10 @@ namespace Homework2
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
+            graphics.PreferredBackBufferWidth = 1024;  // set this value to the desired width of your window
+            graphics.PreferredBackBufferHeight = 768;   // set this value to the desired height of your window
+            graphics.ApplyChanges();
+
             Window.Position = new Point(                    // Center the game view on the screen
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
                     (graphics.PreferredBackBufferWidth / 2),
@@ -104,15 +108,6 @@ namespace Homework2
 
             collectibles = new List<Collectible>();
 
-            for (int i = 0; i < nrCollectibles; i++)
-            {
-                collectibles.Add(new Collectible(
-                    0,
-                    0,
-                    collectibleWidth,
-                    collectibleHeight));
-            }
-
             base.Initialize();
         }
 
@@ -124,20 +119,24 @@ namespace Homework2
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-
-            player.Texture2D = Content.Load<Texture2D>("MarioSpriteSheet");
             
-            player.Rectangle = new Rectangle(0, 0, marioWidth, marioHeight);
+            marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");
+            
+            player = new Player(0, 0, marioWidth, marioHeight);
+            player.Texture2D = marioTexture;
+
+            collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");
 
             for (int i = 0; i < collectibles.Count; i++)
             {
-                collectibles[i].Texture2D = Content.Load<Texture2D>("CollectibleSprite");
+                collectibles.Add(new Collectible(random.Next(50, GraphicsDevice.Viewport.Width),
+                                                          random.Next(50, GraphicsDevice.Viewport.Height),
+                                                          collectibleWidth,
+                                                          collectibleHeight));
 
-                collectibles[i].Rectangle = new Rectangle(0, 0, collectibleWidth, collectibleHeight);
+                collectibles[i].Texture2D = collectibleTexture;
             }
-            
+
             levelScoreFont = Content.Load<SpriteFont>("LevelScoreFont");
             totalScoreFont = Content.Load<SpriteFont>("TotalScoreFont");
             levelTimerFont = Content.Load<SpriteFont>("LevelTimerFont");
@@ -195,7 +194,7 @@ namespace Homework2
 
                         for (int i = 0; i < collectibles.Count; i++)
                         {
-                            if (!collectibles[i].Active)
+                            if (collectibles[i].CheckCollision(player))
                             {
                                 player.LevelScore++;
                                 player.TotalScore++;
@@ -301,21 +300,11 @@ namespace Homework2
 
                     for (int i = 0; i < collectibles.Count; i++)
                     {
-                        if (!collectibles[i].Active)
+                        if (collectibles[i].ActiveCollectible)
                         {
-                            player.LevelScore++;
-                            player.TotalScore++;
-                        }
-                        else
-                        {
-                            collectibles[0].Draw(spriteBatch);
+                            collectibles[i].Draw(spriteBatch);
                         }
                     }
-
-                    //if (player.LevelScore == collectibles.Count())
-                    //{
-                    //    NextLevel();
-                    //}
 
                     break;
                 case GameState.GameOver:
@@ -348,15 +337,15 @@ namespace Homework2
 
             collectibles.Clear();
 
+            nrCollectibles = (((currentLevel + 1) * 2) - 1);
+
             for (int i = 0; i < nrCollectibles; i++)
             {
-                collectibles.Add(new Collectible(
-                    random.Next(marioWidth + 10, GraphicsDevice.Viewport.Width),
-                    random.Next(marioHeight + 10, GraphicsDevice.Viewport.Height),
-                    collectibleWidth,
-                    collectibleHeight));
+                collectibles.Add(new Collectible(random.Next(50, GraphicsDevice.Viewport.Width),
+                                                random.Next(50, GraphicsDevice.Viewport.Height),
+                                                collectibleWidth,
+                                                collectibleHeight));
 
-                collectibles[i].Active = true;
                 collectibles[i].Texture2D = collectibleTexture;
             }
         }

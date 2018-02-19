@@ -99,22 +99,8 @@ namespace Homework2
                 0.0f,
                 Vector2.Zero,
                 flips,
-                0.0f);
-
-
-
-
-
-            //spriteBatch.Draw(                                           // Draw the sprite from the spriteBatch
-            //    base.Texture2D,
-            //    base.Rectangle,
-            //    //currentSprite,
-            //    Color.White,
-            //    0.0f,
-            //    Vector2.Zero,
-            //    flips,
-            //    0.0f);
-            
+                0.0f
+            );            
         }
     }
 }

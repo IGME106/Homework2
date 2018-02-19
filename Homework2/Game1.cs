@@ -398,22 +398,22 @@ namespace Homework2
             {
                 case "Left":
                     returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
+                        0,
                         (viewportHeight / 2) - (textHeight / 2)
                     );
 
                     break;                
                 case "Right":
                     returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
+                        (viewportWidth  - textWidth),
                         (viewportHeight / 2) - (textHeight / 2)
                     );
 
                     break;
-                case "Top":
+                case "TopCenter":
                     returnValue = new Vector2(
                         (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
+                        0
                     );
 
                     break;
@@ -432,13 +432,6 @@ namespace Homework2
 
                     break;
                 case "TopLeft":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "TopCenter":
                     returnValue = new Vector2(
                         (viewportWidth / 2) - (textWidth / 2),
                         (viewportHeight / 2) - (textHeight / 2)

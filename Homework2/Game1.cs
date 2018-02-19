@@ -38,11 +38,12 @@ namespace Homework2
         int collectibleWidth = 20;
         int collectibleHeight = 20;
 
-        // Text drawing properties
+        // Text drawing properties        
         private Vector2 totalScorePosition = new Vector2(0, 0);
         private Vector2 levelScorePosition = new Vector2(0, 35);
         private Vector2 levelTimerPosition = new Vector2(0, 70);
 
+        private SpriteFont menuFont;
         private SpriteFont levelScoreFont;
         private SpriteFont totalScoreFont;
         private SpriteFont levelTimerFont;
@@ -137,6 +138,7 @@ namespace Homework2
                 collectibles[i].Texture2D = collectibleTexture;
             }
 
+            menuFont = Content.Load<SpriteFont>("MenuFont");
             levelScoreFont = Content.Load<SpriteFont>("LevelScoreFont");
             totalScoreFont = Content.Load<SpriteFont>("TotalScoreFont");
             levelTimerFont = Content.Load<SpriteFont>("LevelTimerFont");
@@ -179,7 +181,11 @@ namespace Homework2
                     if (SingleKeyPress(Keys.Enter))
                     {
                         gameState = GameState.Game;
-                        levelTimer = 100;
+                        levelTimer = 10;
+                    }
+                    else
+                    {
+                        previousKbState = kbState;
                     }
 
                     break;
@@ -216,14 +222,20 @@ namespace Homework2
                     }
                     else
                     {
-                        gameState = GameState.GameOver;
-                    }
+                        previousKbState = kbState;
+                    }                    
 
                     break;
                 case GameState.GameOver:
                     if (SingleKeyPress(Keys.Enter))
                     {
+                        previousKbState = kbState;
+
                         gameState = GameState.Menu;
+                    }
+                    else
+                    {
+                        previousKbState = kbState;
                     }
 
                     break;                
@@ -273,9 +285,13 @@ namespace Homework2
             {
                 case GameState.Menu:
                     spriteBatch.DrawString(
-                        levelTimerFont,
-                        "  W\nA S D",
-                        new Vector2(100, 100),
+                        menuFont,
+                        "Coin Collector\n" +
+                        "\n" +
+                        "Use the following keys to navigate" +
+                        "W\nA S D",
+                        new Vector2((GraphicsDevice.Viewport.Width / 3), 
+                                    GraphicsDevice.Viewport.Height / 3),
                         Color.Red
                     );
 
@@ -336,7 +352,7 @@ namespace Homework2
         {
             currentLevel++;
             
-            levelTimer = 100;
+            levelTimer = 10;
             player.LevelScore = 0;
             player.XPosition = (GraphicsDevice.Viewport.Width / 2);
             player.YPosition = (GraphicsDevice.Viewport.Height / 2);

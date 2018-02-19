@@ -44,8 +44,8 @@ namespace Homework2
             if (this.Active)
             {
                 spriteBatch.Draw(
-                Texture2D,
-                Rectangle,
+                base.Texture2D,
+                base.Rectangle,
                 Color.White);
             }            
         }

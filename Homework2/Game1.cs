@@ -31,27 +31,27 @@ namespace Homework2
         // Player texture properties
         private Texture2D marioTexture;
         //private Rectangle marioSprite;
-        int marioSpritesInSheetWidth;
-        int marioSpritesInSheetHeight;
-        int marioWidth;
-        int marioHeight;
+        int marioSpritesInSheetWidth = 5;
+        int marioSpritesInSheetHeight = 1;
+        int marioWidth = 44;
+        int marioHeight = 72;
         
         // Collectible texture properties
         private Texture2D collectibleTexture;
         //private Rectangle collectibleSprite;
-        int collectibleSpritesInSheetWidth;
-        int collectibleSpritesInSheetHeight;
-        int collectibleWidth;
-        int collectibleHeight;
+        int collectibleSpritesInSheetWidth = 1;
+        int collectibleSpritesInSheetHeight = 1;
+        int collectibleWidth = 20;
+        int collectibleHeight = 20;
 
         // Text drawing properties
         private Vector2 totalScorePosition = new Vector2(0, 0);
         private Vector2 levelScorePosition = new Vector2(0, 35);
-        private Vector2 timeCounterPosition = new Vector2(0, 70);
+        private Vector2 levelTimerPosition = new Vector2(0, 70);
 
         private SpriteFont levelScoreFont;
         private SpriteFont totalScoreFont;
-        private SpriteFont timeCounterFont;
+        private SpriteFont levelTimerFont;
         private SpriteFont gameOverFont;
 
         // Animation reqs
@@ -65,6 +65,7 @@ namespace Homework2
 
         int currentLevel;
         int nrCollectibles;
+        double levelTimer;
 
         KeyboardState kbState;
         KeyboardState previousKbState;
@@ -97,19 +98,20 @@ namespace Homework2
 
             currentLevel = 0;
             nrCollectibles = 1;
+            levelTimer = 100;
 
             player = new Player(0, 0, marioWidth, marioHeight);
 
-            //collectibles = new List<Collectible>();
+            collectibles = new List<Collectible>();
 
-            //for (int i = 0; i < nrCollectibles; i++)
-            //{
-            //    collectibles.Add(new Collectible(
-            //        0,
-            //        0,
-            //        collectibleWidth,
-            //        collectibleHeight));
-            //}
+            for (int i = 0; i < nrCollectibles; i++)
+            {
+                collectibles.Add(new Collectible(
+                    0,
+                    0,
+                    collectibleWidth,
+                    collectibleHeight));
+            }
 
             base.Initialize();
         }
@@ -126,31 +128,26 @@ namespace Homework2
             // TODO: use this.Content to load your game content here
 
             player.Texture2D = Content.Load<Texture2D>("MarioSpriteSheet");
-
-            marioSpritesInSheetWidth = 5;
-            marioSpritesInSheetHeight = 1;
-            marioWidth = 44; // player.Texture2D.Width / marioSpritesInSheetWidth;
-            marioHeight = 72; // player.Texture2D.Height / marioSpritesInSheetHeight;
-
+            
             player.Rectangle = new Rectangle(0, 0, marioWidth, marioHeight);
 
-            //collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");
+            for (int i = 0; i < collectibles.Count; i++)
+            {
+                collectibles[i].Texture2D = Content.Load<Texture2D>("CollectibleSprite");
 
-            //collectibleSpritesInSheetWidth = 1;
-            //collectibleSpritesInSheetHeight = 1;
-            //collectibleWidth = 20;
-            //collectibleHeight = 20;
-
+                collectibles[i].Rectangle = new Rectangle(0, 0, collectibleWidth, collectibleHeight);
+            }
+            
             levelScoreFont = Content.Load<SpriteFont>("LevelScoreFont");
             totalScoreFont = Content.Load<SpriteFont>("TotalScoreFont");
-            timeCounterFont = Content.Load<SpriteFont>("TimeCounterFont");
+            levelTimerFont = Content.Load<SpriteFont>("LevelTimerFont");
             gameOverFont = Content.Load<SpriteFont>("GameOverFont");
 
             // Set up animation stuff
             currentFrame = 1;
             fps = 10.0;
             secondsPerFrame = 1.0f / fps;
-            timeCounter = 10000;
+            timeCounter = 0;
         }
 
         /// <summary>
@@ -188,29 +185,29 @@ namespace Homework2
                     break;
                 case GameState.Game:
 
-                    if (timeCounter != 0)
+                    if (levelTimer != 0)
                     {
                         previousKbState = kbState;
 
-                        timeCounter -= gameTime.ElapsedGameTime.TotalSeconds;
+                        levelTimer -= gameTime.ElapsedGameTime.TotalSeconds;
 
                         ProcessInput();
 
-                        //for (int i = 0; i < collectibles.Count; i++)
-                        //{
-                        //    if (!collectibles[i].Active)
-                        //    {
-                        //        player.LevelScore++;
-                        //        player.TotalScore++;
-                        //    }
-                        //}
+                        for (int i = 0; i < collectibles.Count; i++)
+                        {
+                            if (!collectibles[i].Active)
+                            {
+                                player.LevelScore++;
+                                player.TotalScore++;
+                            }
+                        }
 
-                        //if (player.LevelScore == collectibles.Count())
-                        //{
-                        //    NextLevel();
-                        //}
+                        if (player.LevelScore == collectibles.Count())
+                        {
+                            NextLevel();
+                        }
 
-                        timeCounter -= 0.1;
+                        levelTimer -= 0.1;
                     }
                     else
                     {
@@ -271,7 +268,7 @@ namespace Homework2
             {
                 case GameState.Menu:
                     spriteBatch.DrawString(
-                        timeCounterFont,
+                        levelTimerFont,
                         "  W\nA S D",
                         new Vector2(100, 100),
                         Color.Red
@@ -294,24 +291,31 @@ namespace Homework2
                     );
 
                     spriteBatch.DrawString(
-                        timeCounterFont,
-                        timeCounter.ToString(),
-                        timeCounterPosition,
+                        levelTimerFont,
+                        levelTimer.ToString(),
+                        levelTimerPosition,
                         Color.Blue
                     );
 
                     player.Draw(spriteBatch);
 
-                    //for (int i = 0; i < collectibles.Count; i++)
-                    //{
-                    //    if (!collectibles[i].Active)
-                    //    {
-                    //        player.LevelScore++;
-                    //        player.TotalScore++;
-                    //    }
-                    //}
+                    for (int i = 0; i < collectibles.Count; i++)
+                    {
+                        if (!collectibles[i].Active)
+                        {
+                            player.LevelScore++;
+                            player.TotalScore++;
+                        }
+                        else
+                        {
+                            collectibles[0].Draw(spriteBatch);
+                        }
+                    }
 
-                    //NextLevel();
+                    //if (player.LevelScore == collectibles.Count())
+                    //{
+                    //    NextLevel();
+                    //}
 
                     break;
                 case GameState.GameOver:
@@ -336,8 +340,8 @@ namespace Homework2
         private void NextLevel()
         {
             currentLevel++;
-
-            timeCounter = 10;
+            
+            levelTimer = 100;
             player.LevelScore = 0;
             player.XPosition = (GraphicsDevice.Viewport.Width / 2);
             player.YPosition = (GraphicsDevice.Viewport.Height / 2);

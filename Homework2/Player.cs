@@ -59,46 +59,42 @@ namespace Homework2
 
         public new void Draw(SpriteBatch spriteBatch)
         {
-            //Rectangle currentSprite = new Rectangle();
+            Rectangle spriteCurrentState = new Rectangle();
             SpriteEffects flips = SpriteEffects.None;
 
             if (SpriteCurrentState == SpriteState.FaceLeft ||             // Size definition if Mario is facing left
                 SpriteCurrentState == SpriteState.WalkLeft)
             {
                 flips = SpriteEffects.FlipHorizontally;                 // If mario is facing other way, flip sprite
-
-                base.XPosition = base.Rectangle.Width * currentFrame;
                 
-                //currentSprite = new Rectangle(
-                //                   base.Rectangle.Width * currentFrame,
-                //                   0,
-                //                   base.Rectangle.Width,
-                //                   base.Rectangle.Height);
+                spriteCurrentState = new Rectangle(
+                                   base.Rectangle.Width * currentFrame,
+                                   0,
+                                   base.Rectangle.Width,
+                                   base.Rectangle.Height);
             }
             else if (SpriteCurrentState == SpriteState.FaceRight ||       // Size definition if Mario is facing right
                 SpriteCurrentState == SpriteState.WalkRight)
             {
-                base.XPosition = base.Rectangle.Width * currentFrame;
-                //currentSprite = new Rectangle(
-                //                   base.Rectangle.Width * currentFrame,
-                //                   0,
-                //                   base.Rectangle.Width,
-                //                   base.Rectangle.Height);
+                spriteCurrentState = new Rectangle(
+                                   base.Rectangle.Width * currentFrame,
+                                   0,
+                                   base.Rectangle.Width,
+                                   base.Rectangle.Height);
             }
             else                                                        // If size definition if Mario is not moving
             {
-                base.XPosition = 0;
-                //currentSprite = new Rectangle(
-                //                   0,
-                //                   0,
-                //                   base.Rectangle.Width,
-                //                   base.Rectangle.Height);
+                spriteCurrentState = new Rectangle(
+                                   0,
+                                   0,
+                                   base.Rectangle.Width,
+                                   base.Rectangle.Height);
             }
 
             spriteBatch.Draw(
                 base.Texture2D,
                 base.Rectangle,
-                base.Rectangle,
+                spriteCurrentState,
                 Color.White,
                 0.0f,
                 Vector2.Zero,

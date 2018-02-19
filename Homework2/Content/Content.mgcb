@@ -39,13 +39,6 @@
 /processorParam:TextureFormat=Compressed
 /build:LevelScoreFont.spritefont
 
-#begin TimeCounterFont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:TimeCounterFont.spritefont
-
 #begin TotalScoreFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -64,4 +57,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MarioSpriteSheet.png
+
+#begin LevelTimerFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:LevelTimerFont.spritefont
 

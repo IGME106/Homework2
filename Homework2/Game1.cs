@@ -1,15 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+/// <summary>
+/// IGME-106 - Game Development and Algorithmic Problem Solving
+/// Homework 2 - Coin Collector
+/// Class Description   : Main game glass for the project
+/// Author              : Benjamin Kleynhans
+/// Modified By         : Benjamin Kleynhans
+/// Date                : February 19, 2018
+/// Filename            : Game1.cs
+/// </summary>
+///
+
 namespace Homework2
 {
+    /// <summary>
+    /// Game state machine
+    /// </summary>
     public enum GameState
     {
         Menu,
@@ -25,6 +37,7 @@ namespace Homework2
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        // Define player and collectible objects
         Player player;
         List<Collectible> collectibles;
 
@@ -38,12 +51,16 @@ namespace Homework2
         int collectibleWidth = 20;
         int collectibleHeight = 20;
 
-        // Text drawing properties        
+        // Text drawing properties
+        private Vector2 menuPosition = new Vector2(0, 0);
         private Vector2 totalScorePosition = new Vector2(0, 0);
-        private Vector2 levelScorePosition = new Vector2(0, 35);
-        private Vector2 levelTimerPosition = new Vector2(0, 70);
+        private Vector2 currentLevelPosition = new Vector2(0, 0);
+        private Vector2 levelScorePosition = new Vector2(0, 0);
+        private Vector2 levelTimerPosition = new Vector2(0, 0);
+        private Vector2 gameOverPosition = new Vector2(0, 0);
 
         private SpriteFont menuFont;
+        private SpriteFont currentLevelFont;
         private SpriteFont levelScoreFont;
         private SpriteFont totalScoreFont;
         private SpriteFont levelTimerFont;
@@ -62,22 +79,26 @@ namespace Homework2
         int nrCollectibles;
         double levelTimer;
 
+        // System stats
         KeyboardState kbState;
         KeyboardState previousKbState;
 
+        // Random number generator
         Random random = new Random();
-
-
+        
+        /// <summary>
+        /// Constructor for the class.
+        /// </summary>
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 1024;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = 768;   // set this value to the desired height of your window
+            graphics.PreferredBackBufferWidth = 1024;                           // Set desired width of window
+            graphics.PreferredBackBufferHeight = 768;                           // Set desired height of window
             graphics.ApplyChanges();
 
-            Window.Position = new Point(                    // Center the game view on the screen
+            Window.Position = new Point(                                        // Center the game view on the screen
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
                     (graphics.PreferredBackBufferWidth / 2),
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
@@ -93,14 +114,12 @@ namespace Homework2
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             currentLevel = 0;
             nrCollectibles = 1;
+                        
+            player = new Player(0, 0, marioWidth, marioHeight);                 // Create a new player object
 
-            player = new Player(0, 0, marioWidth, marioHeight);
-
-            collectibles = new List<Collectible>();
+            collectibles = new List<Collectible>();                             // Create a new collectibles list object
 
             base.Initialize();
         }
@@ -111,33 +130,34 @@ namespace Homework2
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);                      // Create a new SpriteBatch, which can be used to draw textures.
+
+            marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");         // Load the player spritesheet
             
-            marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");
-            
-            player = new Player(
+            player = new Player(                                                // Create a new player with default values
                 GraphicsDevice.Viewport.Width / 2,
                 GraphicsDevice.Viewport.Width / 2,
                 marioWidth,
                 marioHeight
             );
 
-            player.Texture2D = marioTexture;
+            player.Texture2D = marioTexture;                                    // Add the player spritesheet to the player object
 
-            collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");
+            collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");  // Load the collectible spritesheet
 
-            for (int i = 0; i < collectibles.Count; i++)
+            for (int i = 0; i < collectibles.Count; i++)                        // Create collectibles with default values
             {
                 collectibles.Add(new Collectible(random.Next(50, GraphicsDevice.Viewport.Width),
                                                           random.Next(50, GraphicsDevice.Viewport.Height),
                                                           collectibleWidth,
                                                           collectibleHeight));
 
-                collectibles[i].Texture2D = collectibleTexture;
+                collectibles[i].Texture2D = collectibleTexture;                 // Add the collectible spritesheet to the collectible object
             }
 
+            // Load the different fonts
             menuFont = Content.Load<SpriteFont>("MenuFont");
+            currentLevelFont = Content.Load<SpriteFont>("CurrentLevelFont");
             levelScoreFont = Content.Load<SpriteFont>("LevelScoreFont");
             totalScoreFont = Content.Load<SpriteFont>("TotalScoreFont");
             levelTimerFont = Content.Load<SpriteFont>("LevelTimerFont");
@@ -169,36 +189,35 @@ namespace Homework2
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            //ProcessInput();
+            kbState = Keyboard.GetState();                                      // Get current state of keyboard
 
-            kbState = Keyboard.GetState();
-
-            switch (gameState)
+            switch (gameState)                                                  // Main game loop logic
             {
+                // Display the game menu
                 case GameState.Menu:
                     if (SingleKeyPress(Keys.Enter))
                     {
-                        gameState = GameState.Game;
-                        levelTimer = 10;
+                        gameState = GameState.Game;                             // Change from menu to game on enter
+                        levelTimer = 100;
                     }
                     else
                     {
-                        previousKbState = kbState;
+                        previousKbState = kbState;                              // If keypress was not enter, change previous state
                     }
 
                     break;
-                case GameState.Game:
+                // Start the game
+                case GameState.Game:                                            // Change from game to gameover on enter
 
                     if (levelTimer > 0)
                     {
-                        previousKbState = kbState;
+                        previousKbState = kbState;                              // Change previous state
 
                         levelTimer -= gameTime.ElapsedGameTime.TotalSeconds;
 
-                        ProcessInput();
+                        ProcessInput();                                         // Process user input
 
-                        for (int i = 0; i < collectibles.Count; i++)
+                        for (int i = 0; i < collectibles.Count; i++)            // Test each collectible for collision
                         {
                             if (collectibles[i].CheckCollision(player))
                             {
@@ -207,34 +226,35 @@ namespace Homework2
                             }
                         }
 
-                        if (player.LevelScore == collectibles.Count())
-                        {
+                        if (player.LevelScore == collectibles.Count())          // If the player has collected all collectibles
+                        {                                                           // advance to next level
                             NextLevel();
                         }
 
                         levelTimer -= 0.1;
 
-                        if (levelTimer <= 0)
+                        if (levelTimer <= 0)                                    // If the timer ran out, go to game over
                         {
                             gameState = GameState.GameOver;
                         }
                     }
                     else
                     {
-                        previousKbState = kbState;
+                        previousKbState = kbState;                              // Change previous state
                     }                    
 
                     break;
+                // Display Game Over and score
                 case GameState.GameOver:
                     if (SingleKeyPress(Keys.Enter))
                     {
-                        previousKbState = kbState;
+                        previousKbState = kbState;                              // Change previous state
 
-                        gameState = GameState.Menu;
+                        gameState = GameState.Menu;                             // Change from game to gameover on enter
                     }
                     else
                     {
-                        previousKbState = kbState;
+                        previousKbState = kbState;                              // Change previous state
                     }
 
                     break;                
@@ -277,64 +297,88 @@ namespace Homework2
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            string drawString = null;
+
             spriteBatch.Begin();
 
-            // TODO: Add your drawing code here
+            // Define which sprite fonts to display based on which state the game is in
             switch (gameState)
             {
                 case GameState.Menu:
 
-                    string drawString = "Coin Collector\n" +
+                    drawString = 
+                        "               Coin Collector\n" +
                         "\n" +
                         "Use the following keys to navigate" +
                         "\n\n" +
-                        "  W\nA S D" +
+                        "                         W\n" +
+                        "                       A S D" +
                         "\n\n" +
                         "Press Enter to start/stop the game";
 
-                    //spriteBatch.DrawString(
-                    //    menuFont,
-                    //    drawString,
-                    //    new Vector2((GraphicsDevice.Viewport.Width / 2), 
-                    //                GraphicsDevice.Viewport.Height / 3),
-                    //    Color.Red
-                    //);
-                    
-                    spriteBatch.DrawString(
-                        menuFont,
-                        drawString,
-                        new Vector2(
-                                (GraphicsDevice.Viewport.Width / 2) - (menuFont.MeasureString(drawString).X / 2),
-                                (GraphicsDevice.Viewport.Height / 2) - (menuFont.MeasureString(drawString).Y / 2)
-                            ),
-                        Color.Red
+                    // Set menu to center of screen (kind of)
+                    menuPosition = new Vector2(
+                        (GraphicsDevice.Viewport.Width / 2) - (menuFont.MeasureString(drawString).X / 2),
+                        (GraphicsDevice.Viewport.Height / 2) - (menuFont.MeasureString(drawString).Y / 2)
                     );
+
+                    DrawSpriteBatch(menuFont, drawString, menuPosition, Color.Red);
 
                     break;
                 case GameState.Game:
-                    spriteBatch.DrawString(
-                        totalScoreFont,
-                        "Total Score: " + player.TotalScore.ToString(),
-                        totalScorePosition,
-                        Color.Blue
+
+                    drawString = "Current Level:    " + this.currentLevel;
+
+                    // Set current level position to top, second from top
+                    currentLevelPosition = new Vector2(
+                        (GraphicsDevice.Viewport.Width - currentLevelFont.MeasureString(drawString).X - 5),
+                        35
                     );
 
-                    spriteBatch.DrawString(
-                        levelScoreFont,
-                        "Score this level: " + player.LevelScore.ToString(),
-                        levelScorePosition,
-                        Color.Blue
+                    DrawSpriteBatch(currentLevelFont, drawString, currentLevelPosition, Color.Red);
+
+                    drawString = "Total Score:      " + player.TotalScore.ToString();
+
+                    // Set total score position to top right
+                    totalScorePosition = new Vector2(
+                        (GraphicsDevice.Viewport.Width - totalScoreFont.MeasureString(drawString).X - 5),
+                        5
                     );
 
-                    spriteBatch.DrawString(
-                        levelTimerFont,
-                        "Time left: " + String.Format("{0:0.00}", levelTimer),
-                        levelTimerPosition,
-                        Color.Blue
+                    DrawSpriteBatch(totalScoreFont, drawString, totalScorePosition, Color.Red);
+
+                    drawString = "Level Score:      " + player.LevelScore.ToString();
+
+                    // Set level score position to top left
+                    levelScorePosition = new Vector2(5, 5);
+
+                    DrawSpriteBatch(levelScoreFont, drawString, levelScorePosition, Color.Blue);
+
+                    drawString = "Time left:        " + String.Format("{0:0.00}", levelTimer);
+
+                    // Set timer position to top center
+                    levelTimerPosition = new Vector2(
+                        (GraphicsDevice.Viewport.Width / 2) - (levelTimerFont.MeasureString(drawString).X / 2),
+                        5
                     );
 
+                    if (levelTimer > 50)                                        // If the timer is larger than 50, use blue font
+                    {
+                        DrawSpriteBatch(levelTimerFont, drawString, levelTimerPosition, Color.Blue);
+                    }
+                    else if ((levelTimer <= 50) && (levelTimer >= 25))          // If the timer is less than 50 and larger than 25, 
+                    {                                                               // use orange font
+                        DrawSpriteBatch(levelTimerFont, drawString, levelTimerPosition, Color.Orange);
+                    }
+                    else                                                        // If the timer is less than 25, use red font
+                    {
+                        DrawSpriteBatch(levelTimerFont, drawString, levelTimerPosition, Color.Red);
+                    }
+
+                    // Draw the player sprite
                     player.Draw(spriteBatch);
 
+                    // Draw the collectible sprites that are active
                     for (int i = 0; i < collectibles.Count; i++)
                     {
                         if (collectibles[i].ActiveCollectible)
@@ -345,13 +389,23 @@ namespace Homework2
 
                     break;
                 case GameState.GameOver:
-                    spriteBatch.DrawString(
-                        gameOverFont,
-                        "GAME OVER",
-                        new Vector2((GraphicsDevice.Viewport.Width / 2) - 4,
-                                    GraphicsDevice.Viewport.Height / 2),
-                        Color.Red
-                    );
+
+                    drawString = 
+                        "       GAME OVER" +
+                        "\n\n" +
+                        "   You reached level       " + this.currentLevel +
+                        "\n\n" +
+                        "   Your High Score is      " + player.TotalScore +
+                        "\n\n" +
+                        "To return to the menu, press Enter.";
+
+                    // Set game over position to center scree (kind of)
+                    gameOverPosition = new Vector2(
+                                (GraphicsDevice.Viewport.Width / 2) - (gameOverFont.MeasureString(drawString).X / 2),
+                                (GraphicsDevice.Viewport.Height / 2) - (gameOverFont.MeasureString(drawString).Y / 2)
+                            );
+
+                    DrawSpriteBatch(gameOverFont, drawString, gameOverPosition, Color.Red);
 
                     break;
                 default:
@@ -363,133 +417,43 @@ namespace Homework2
             base.Draw(gameTime);
         }
 
-        private void StringDrawer(string drawString, SpriteFont drawFont, string position, string color)
+        /// <summary>
+        /// This method is used to actually draw the textual graphics
+        /// </summary>
+        /// <param name="textFont">The name of the SpriteFont that was defined</param>
+        /// <param name="textString">The string that needs to be printed</param>
+        /// <param name="textVector">The location on the screen where the text should be printed</param>
+        /// <param name="textColor">The color to use when printing the text</param>
+        private void DrawSpriteBatch(SpriteFont textFont, string textString, Vector2 textVector, Color textColor)
         {
-            string drawString = "Coin Collector\n" +
-                        "\n" +
-                        "Use the following keys to navigate" +
-                        "\n\n" +
-                        "  W\nA S D" +
-                        "\n\n" +
-                        "Press Enter to start/stop the game";
-            
             spriteBatch.DrawString(
-                menuFont,
-                drawString,
-                new Vector2(
-                        (GraphicsDevice.Viewport.Width / 2) - (menuFont.MeasureString(drawString).X / 2),
-                        (GraphicsDevice.Viewport.Height / 2) - (menuFont.MeasureString(drawString).Y / 2)
-                    ),
-                Color.Red
+                textFont,
+                textString,
+                textVector,
+                textColor
             );
         }
 
-        private Vector2 GetPosition(string displayString, string position, SpriteFont font)
-        {
-            Vector2 returnValue = new Vector2(0, 0);
-
-            int viewportWidth = GraphicsDevice.Viewport.Width;
-            int viewportHeight = GraphicsDevice.Viewport.Height;
-
-            int textWidth = (int)font.MeasureString(displayString).X;
-            int textHeight = (int)font.MeasureString(displayString).Y;
-            
-            switch (position)
-            {
-                case "Left":
-                    returnValue = new Vector2(
-                        0,
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;                
-                case "Right":
-                    returnValue = new Vector2(
-                        (viewportWidth  - textWidth),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "TopCenter":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        0
-                    );
-
-                    break;
-                case "Bottom":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "Center":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "TopLeft":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "TopRight":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "BottomLeft":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "BottomCenter":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                case "BottomRight":
-                    returnValue = new Vector2(
-                        (viewportWidth / 2) - (textWidth / 2),
-                        (viewportHeight / 2) - (textHeight / 2)
-                    );
-
-                    break;
-                default:
-                    break;
-            }
-
-            return returnValue;
-        }
-
+        /// <summary>
+        /// Advances the player to the next level
+        /// </summary>
         private void NextLevel()
         {
             currentLevel++;
             
-            levelTimer = 10;
+            levelTimer = 100;
             player.LevelScore = 0;
-            player.XPosition = (GraphicsDevice.Viewport.Width / 2);
+            player.XPosition = (GraphicsDevice.Viewport.Width / 2);             // Reset player position to center screen
             player.YPosition = (GraphicsDevice.Viewport.Height / 2);
 
-            collectibles.Clear();
+            collectibles.Clear();                                               // Clear the collectible objeccts
 
-            nrCollectibles = (((currentLevel + 1) * 2) - 1);
+            nrCollectibles = (((currentLevel + 1) * 2) - 1);                    // Calculate a random number of collectibles
 
-            for (int i = 0; i < nrCollectibles; i++)
+            for (int i = 0; i < nrCollectibles; i++)                            // Create the collectibles
             {
-                collectibles.Add(new Collectible(random.Next(50, (GraphicsDevice.Viewport.Width - collectibleWidth)),
-                                                random.Next(50, GraphicsDevice.Viewport.Height - collectibleHeight),
+                collectibles.Add(new Collectible(random.Next(0, (GraphicsDevice.Viewport.Width - collectibleWidth)),
+                                                random.Next(100, GraphicsDevice.Viewport.Height - collectibleHeight),
                                                 collectibleWidth,
                                                 collectibleHeight));
 
@@ -497,15 +461,23 @@ namespace Homework2
             }
         }
 
+        /// <summary>
+        /// Resets the game variables and calls for the new level
+        /// </summary>
         private void ResetGame()
         {
             this.currentLevel = 0;
 
+            player.LevelScore = 0;
             player.TotalScore = 0;
 
             NextLevel();
         }
 
+        /// <summary>
+        /// Wraps the character around the screen if it moves off the visible display
+        /// </summary>
+        /// <param name="gameObject"></param>
         private void ScreenWrap(GameObject gameObject)
         {
             if (gameObject.XPosition > GraphicsDevice.Viewport.Width)
@@ -527,6 +499,11 @@ namespace Homework2
             }
         }
 
+        /// <summary>
+        /// Tests whether key was pressed only once
+        /// </summary>
+        /// <param name="keys">The key that needs to be tested</param>
+        /// <returns></returns>
         private bool SingleKeyPress(Keys keys)
         {
             bool returnValue = false;
@@ -539,6 +516,10 @@ namespace Homework2
             return returnValue;
         }
 
+        /// <summary>
+        /// Processes keyboard input and updates state machine to indicate which sprite
+        ///   of Mario should be displayed
+        /// </summary>
         private void ProcessInput()
         {
             if (kbState.IsKeyDown(Keys.A))                    // Move left
@@ -585,17 +566,17 @@ namespace Homework2
                 }
             }
 
-            if (kbState.IsKeyDown(Keys.W))                    // Move up
+            if (kbState.IsKeyDown(Keys.W))                                      // Move up
             {
                 player.YPosition -= 5;
             }
 
-            if (kbState.IsKeyDown(Keys.S))                    // Move down
+            if (kbState.IsKeyDown(Keys.S))                                      // Move down
             {
                 player.YPosition += 5;
             }
 
-            if (kbState.IsKeyUp(Keys.W) &&                    // If all keys are up, Mario is standing
+            if (kbState.IsKeyUp(Keys.W) &&                                      // If all keys are up, Mario is standing
                 kbState.IsKeyUp(Keys.A) &&
                 kbState.IsKeyUp(Keys.S) &&
                 kbState.IsKeyUp(Keys.D))

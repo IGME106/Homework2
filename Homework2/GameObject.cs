@@ -19,7 +19,7 @@ namespace Homework2
     /// </summary>
     class GameObject : Game1
     {
-        private Texture2D texture2d;
+        private Texture2D objectTexture;
         private Rectangle rectangle;
 
         private int xPosition;
@@ -35,16 +35,16 @@ namespace Homework2
         /// 
         public GameObject(int x, int y, int width, int height)
         {
-            rectangle = new Rectangle(x, y, width, height);
+            this.Rectangle = new Rectangle(x, y, width, height);
         }
 
         /// <summary>
         /// Property of sprite texture / image
         /// </summary>
-        public Texture2D Texture2D
+        public Texture2D ObjectTexture
         {
-            get { return this.texture2d; }
-            set { this.texture2d = value; }
+            get { return this.objectTexture; }
+            set { this.objectTexture = value; }
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Homework2
             {
                 this.xPosition = value;
 
-                CreateRectangle();                                              // rectangle is a struct, therefore it
+                this.CreateRectangle();                                              // rectangle is a struct, therefore it
             }                                                                       // has to be recreated
         }
 
@@ -80,7 +80,7 @@ namespace Homework2
             {
                 this.yPosition = value;
 
-                CreateRectangle();                                              // rectangle is a struct, therefore it
+                this.CreateRectangle();                                              // rectangle is a struct, therefore it
             }                                                                       // has to be recreated
         }
 
@@ -89,17 +89,17 @@ namespace Homework2
         /// </summary>
         private void CreateRectangle()
         {
-            rectangle = new Rectangle(this.XPosition, this.YPosition, this.Rectangle.Width, this.Rectangle.Height);
+            this.Rectangle = new Rectangle(this.XPosition, this.YPosition, this.Rectangle.Width, this.Rectangle.Height);
         }
 
         /// <summary>
-        /// Property of previuos statemachine state of the sprite
+        /// Property of previous statemachine state of the sprite
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
         {   
             spriteBatch.Draw(
-                texture2d,
-                rectangle,
+                this.ObjectTexture,
+                this.Rectangle,
                 Color.White);
         }
     }    

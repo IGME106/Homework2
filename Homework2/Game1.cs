@@ -45,7 +45,7 @@ namespace Homework2
         private Texture2D marioTexture;
         int marioWidth = 44;
         int marioHeight = 72;
-        
+
         // Collectible texture properties
         private Texture2D collectibleTexture;
         int collectibleWidth = 20;
@@ -85,7 +85,7 @@ namespace Homework2
 
         // Random number generator
         Random random = new Random();
-        
+
         /// <summary>
         /// Constructor for the class.
         /// </summary>
@@ -94,16 +94,16 @@ namespace Homework2
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 1024;                           // Set desired width of window
-            graphics.PreferredBackBufferHeight = 768;                           // Set desired height of window
-            graphics.ApplyChanges();
+            //graphics.PreferredBackBufferWidth = 1024;                           // Set desired width of window
+            //graphics.PreferredBackBufferHeight = 768;                           // Set desired height of window
+            //graphics.ApplyChanges();
 
-            Window.Position = new Point(                                        // Center the game view on the screen
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
-                    (graphics.PreferredBackBufferWidth / 2),
-                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
-                    (graphics.PreferredBackBufferHeight / 2)
-            );
+            //Window.Position = new Point(                                        // Center the game view on the screen
+            //    (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
+            //        (graphics.PreferredBackBufferWidth / 2),
+            //    (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
+            //        (graphics.PreferredBackBufferHeight / 2)
+            //);
         }
 
         /// <summary>
@@ -114,9 +114,20 @@ namespace Homework2
         /// </summary>
         protected override void Initialize()
         {
+            graphics.PreferredBackBufferWidth = 1024;                           // Set desired width of window
+            graphics.PreferredBackBufferHeight = 768;                           // Set desired height of window
+            graphics.ApplyChanges();
+
+            Window.Position = new Point(                                        // Center the game view on the screen
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
+                    (graphics.PreferredBackBufferWidth / 2),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
+                    (graphics.PreferredBackBufferHeight / 2)
+            );
+
             currentLevel = 0;
             nrCollectibles = 1;
-                        
+
             player = new Player(0, 0, marioWidth, marioHeight);                 // Create a new player object
 
             collectibles = new List<Collectible>();                             // Create a new collectibles list object
@@ -133,7 +144,7 @@ namespace Homework2
             spriteBatch = new SpriteBatch(GraphicsDevice);                      // Create a new SpriteBatch, which can be used to draw textures.
 
             marioTexture = Content.Load<Texture2D>("MarioSpriteSheet");         // Load the player spritesheet
-            
+
             player = new Player(                                                // Create a new player with default values
                 GraphicsDevice.Viewport.Width / 2,
                 GraphicsDevice.Viewport.Width / 2,
@@ -141,7 +152,7 @@ namespace Homework2
                 marioHeight
             );
 
-            player.Texture2D = marioTexture;                                    // Add the player spritesheet to the player object
+            player.ObjectTexture = marioTexture;                                    // Add the player spritesheet to the player object
 
             collectibleTexture = Content.Load<Texture2D>("CollectibleSprite");  // Load the collectible spritesheet
 
@@ -152,7 +163,7 @@ namespace Homework2
                                                           collectibleWidth,
                                                           collectibleHeight));
 
-                collectibles[i].Texture2D = collectibleTexture;                 // Add the collectible spritesheet to the collectible object
+                collectibles[i].ObjectTexture = collectibleTexture;                 // Add the collectible spritesheet to the collectible object
             }
 
             // Load the different fonts
@@ -241,7 +252,7 @@ namespace Homework2
                     else
                     {
                         previousKbState = kbState;                              // Change previous state
-                    }                    
+                    }
 
                     break;
                 // Display Game Over and score
@@ -257,7 +268,7 @@ namespace Homework2
                         previousKbState = kbState;                              // Change previous state
                     }
 
-                    break;                
+                    break;
                 default:
                     break;
             }
@@ -306,7 +317,7 @@ namespace Homework2
             {
                 case GameState.Menu:
 
-                    drawString = 
+                    drawString =
                         "               Coin Collector\n" +
                         "\n" +
                         "Use the following keys to navigate" +
@@ -366,7 +377,7 @@ namespace Homework2
                     {
                         DrawSpriteBatch(levelTimerFont, drawString, levelTimerPosition, Color.Blue);
                     }
-                    else if ((levelTimer <= 50) && (levelTimer >= 25))          // If the timer is less than 50 and larger than 25, 
+                    else if ((levelTimer <= 50) && (levelTimer >= 25))          // If the timer is less than 50 and larger than 25,
                     {                                                               // use orange font
                         DrawSpriteBatch(levelTimerFont, drawString, levelTimerPosition, Color.Orange);
                     }
@@ -390,7 +401,7 @@ namespace Homework2
                     break;
                 case GameState.GameOver:
 
-                    drawString = 
+                    drawString =
                         "       GAME OVER" +
                         "\n\n" +
                         "   You reached level       " + this.currentLevel +
@@ -440,24 +451,27 @@ namespace Homework2
         private void NextLevel()
         {
             currentLevel++;
-            
+
             levelTimer = 100;
             player.LevelScore = 0;
             player.XPosition = (GraphicsDevice.Viewport.Width / 2);             // Reset player position to center screen
             player.YPosition = (GraphicsDevice.Viewport.Height / 2);
 
-            collectibles.Clear();                                               // Clear the collectible objeccts
+            collectibles.Clear();                                               // Clear the collectible objects
 
             nrCollectibles = (((currentLevel + 1) * 2) - 1);                    // Calculate a random number of collectibles
 
+            int viewPortWidth = GraphicsDevice.Viewport.Width;
+            int viewPortHeight = GraphicsDevice.Viewport.Height;
+
             for (int i = 0; i < nrCollectibles; i++)                            // Create the collectibles
             {
-                collectibles.Add(new Collectible(random.Next(0, (GraphicsDevice.Viewport.Width - collectibleWidth)),
-                                                random.Next(100, GraphicsDevice.Viewport.Height - collectibleHeight),
+                collectibles.Add(new Collectible(random.Next(0, (viewPortWidth - collectibleWidth)),
+                                                random.Next(100, viewPortHeight - collectibleHeight),
                                                 collectibleWidth,
                                                 collectibleHeight));
 
-                collectibles[i].Texture2D = collectibleTexture;
+                collectibles[i].ObjectTexture = collectibleTexture;
             }
         }
 

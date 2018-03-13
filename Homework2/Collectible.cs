@@ -22,7 +22,7 @@ namespace Homework2
         private bool activeCollectible;
 
         /// <summary>
-        /// Collecctible object constructor.  Takes input values and passes them to the base
+        /// Collectible object constructor.  Takes input values and passes them to the base
         /// </summary>
         /// <param name="x">collectible x coordinate</param>
         /// <param name="y">collectible y coordinate</param>
@@ -34,7 +34,7 @@ namespace Homework2
         }
 
         /// <summary>
-        /// Property to determinen if collectible is active (not yet collected) or not
+        /// Property to determine if collectible is active (not yet collected) or not
         /// </summary>
         public bool ActiveCollectible
         {
@@ -80,7 +80,7 @@ namespace Homework2
             if (this.ActiveCollectible)
             {
                 spriteBatch.Draw(
-                base.Texture2D,
+                base.ObjectTexture,
                 base.Rectangle,
                 Color.White);
             }            

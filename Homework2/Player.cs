@@ -35,6 +35,8 @@ namespace Homework2
         private SpriteState spriteCurrentState = SpriteState.Stand;
         private SpriteState spritePreviousState = SpriteState.Stand;
 
+        public int spriteColumn = 0;
+
         /// <summary>
         /// Player object constructor.  Takes input values and passes them to the base
         /// </summary>
@@ -124,7 +126,7 @@ namespace Homework2
             }
 
             spriteBatch.Draw(                                                   // Draw the sprite from the spriteBatch
-                base.Texture2D,
+                base.ObjectTexture,
                 base.Rectangle,
                 spriteCurrentState,
                 Color.White,
